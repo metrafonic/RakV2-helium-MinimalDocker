@@ -1,0 +1,33 @@
+services:
+
+  pktfwd:
+    build: ./sx1302_hal
+    entrypoint: ["/opt/packet_forwarder/entrypoint.sh"]
+    working_dir: /opt/packet_forwarder
+    environment:
+      VENDOR: rakv2-libgpiod
+      REGION: EU868
+    privileged: true
+    volumes:
+      - ./packet_forwarder/configs:/opt/packet_forwarder/configs
+      - ./packet_forwarder/tools:/opt/packet_forwarder/tools
+    network_mode: host
+    restart: always
+
+  miner:
+    image: quay.io/team-helium/miner:gateway-latest
+    command: ["helium_gateway", "server"]
+    environment:
+      - GW_REGION=EU868
+      - RUST_BACKTRACE=1
+      - GW_LISTEN=0.0.0.0:1680
+      - GW_KEYPAIR=ecc://i2c-1:96?slot=0
+      - GW_ONBOARDING=ecc://i2c-1:96?slot=0
+    privileged: true
+    devices:
+      - /dev/i2c-1:/dev/i2c-1
+    security_opt:
+      - label=disable
+    network_mode: host
+    restart: unless-stopped
+

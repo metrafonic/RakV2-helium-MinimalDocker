@@ -1,0 +1,50 @@
+#!/bin/sh
+
+SX1302_RESET_PIN=25    # GPIO number (line offset)
+GPIOCHIP="gpiochip0"   # Adjust if needed, run `gpioinfo` to check
+
+WAIT_GPIO() {
+    sleep 0.1
+}
+
+init() {
+    # No explicit export/unexport needed with libgpiod
+    # But we can check line availability if needed (optional)
+    # Just placeholder here:
+    echo "Using GPIO chip $GPIOCHIP, line $SX1302_RESET_PIN"
+}
+
+reset() {
+    echo "CoreCell reset through GPIO$SX1302_RESET_PIN..."
+
+    # Set line HIGH
+    gpioset $GPIOCHIP $SX1302_RESET_PIN=1
+    WAIT_GPIO
+
+    # Set line LOW
+    gpioset $GPIOCHIP $SX1302_RESET_PIN=0
+    WAIT_GPIO
+}
+
+term() {
+    # No explicit cleanup needed with libgpiod tools
+    echo "Cleanup done (no unexport needed with libgpiod)"
+}
+
+case "$1" in
+    start)
+        term    # cleanup just in case (no-op here)
+        init
+        reset
+        ;;
+    stop)
+        reset
+        term
+        ;;
+    *)
+        echo "Usage: $0 {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

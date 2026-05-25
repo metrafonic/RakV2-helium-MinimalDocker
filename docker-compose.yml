@@ -29,6 +29,5 @@ services:
       - /dev/i2c-1:/dev/i2c-1
     security_opt:
       - label=disable
-    network_mode: host
     restart: unless-stopped
 

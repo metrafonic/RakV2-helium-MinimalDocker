@@ -8,10 +8,11 @@ services:
       VENDOR: rakv2-libgpiod
       REGION: EU868
     privileged: true
+    depends_on:
+      - miner
     volumes:
       - ./packet_forwarder/configs:/opt/packet_forwarder/configs
       - ./packet_forwarder/tools:/opt/packet_forwarder/tools
-    network_mode: host
     restart: always
 
   miner:
